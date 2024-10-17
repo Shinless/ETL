@@ -11,8 +11,8 @@
   DTS:LocaleID="13322"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="14"
-  DTS:VersionGUID="{7ACB2145-0F8C-4219-9A8E-47DE8CEB42D9}">
+  DTS:VersionBuild="15"
+  DTS:VersionGUID="{1C7BD4C1-B6EE-48BD-8CD5-43E63D8DD853}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -1657,11 +1657,17 @@ FROM            Productos INNER JOIN
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaVenta]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Expr1]"
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[VentaID]"
                       cachedDataType="i4"
-                      cachedName="Expr1"
+                      cachedName="VentaID"
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[VentaID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Expr1]" />
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VentaID]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[FechaConvertida]"
+                      cachedDataType="i4"
+                      cachedName="FechaConvertida"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1703,7 +1709,7 @@ FROM            Productos INNER JOIN
                       name="FechaEnvio" />
                     <externalMetadataColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
-                      dataType="i2"
+                      dataType="i4"
                       name="Fecha" />
                   </externalMetadataColumns>
                 </input>
@@ -1758,11 +1764,25 @@ FROM            Productos INNER JOIN
                   dataType="System.String"
                   description="Comando SQL para ejecutar."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT        Ventas.VentaID AS Expr1, Ventas.ClienteID, DetalleVentas.ProductoID, Ventas.VendedorID, Almacenes.AlmacenID, DetalleVentas.Cantidad, DetalleVentas.PrecioUnitario, Ventas.Fecha, Ventas.FechaEnvio
-FROM            DetalleVentas INNER JOIN
-                         Ventas ON DetalleVentas.VentaID = Ventas.VentaID INNER JOIN
-                         Territorios ON Ventas.TerritorioID = Territorios.TerritorioID INNER JOIN
-                         Almacenes ON Territorios.TerritorioID = Almacenes.TerritorioID</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+    Ventas.VentaID,
+    Ventas.ClienteID,
+    DetalleVentas.ProductoID,
+    Ventas.VendedorID,
+    Almacenes.AlmacenID,
+    DetalleVentas.Cantidad,
+    DetalleVentas.PrecioUnitario,
+    Ventas.Fecha,
+    Ventas.FechaEnvio,
+    CONVERT(INT, CONVERT(CHAR(8), Ventas.Fecha, 112)) AS FechaConvertida
+FROM
+    DetalleVentas
+INNER JOIN
+    Ventas ON DetalleVentas.VentaID = Ventas.VentaID
+INNER JOIN
+    Territorios ON Ventas.TerritorioID = Territorios.TerritorioID
+INNER JOIN
+    Almacenes ON Territorios.TerritorioID = Almacenes.TerritorioID;</property>
                 <property
                   dataType="System.String"
                   description="Variable que contiene el comando SQL para ejecutar."
@@ -1798,15 +1818,6 @@ FROM            DetalleVentas INNER JOIN
                   refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB]"
                   name="Salida de origen de OLE DB">
                   <outputColumns>
-                    <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Expr1]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversión"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Expr1]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Expr1]"
-                      name="Expr1"
-                      truncationRowDisposition="FailComponent" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ClienteID]"
                       dataType="i4"
@@ -1879,13 +1890,27 @@ FROM            DetalleVentas INNER JOIN
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaEnvio]"
                       name="FechaEnvio"
                       truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VentaID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[VentaID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VentaID]"
+                      name="VentaID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[FechaConvertida]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]"
+                      name="FechaConvertida"
+                      truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Expr1]"
-                      dataType="i4"
-                      name="Expr1" />
                     <externalMetadataColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[ClienteID]"
                       dataType="i4"
@@ -1918,6 +1943,14 @@ FROM            DetalleVentas INNER JOIN
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[FechaEnvio]"
                       dataType="dbTimeStamp"
                       name="FechaEnvio" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[VentaID]"
+                      dataType="i4"
+                      name="VentaID" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[FechaConvertida]"
+                      dataType="i4"
+                      name="FechaConvertida" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1926,10 +1959,10 @@ FROM            DetalleVentas INNER JOIN
                   name="Salida de error de origen de OLE DB">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Expr1]"
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[VentaID]"
                       dataType="i4"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Expr1]"
-                      name="Expr1" />
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[VentaID]"
+                      name="VentaID" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ClienteID]"
                       dataType="i4"
@@ -1970,6 +2003,11 @@ FROM            DetalleVentas INNER JOIN
                       dataType="dbTimeStamp"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaEnvio]"
                       name="FechaEnvio" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaConvertida]"
+                      dataType="i4"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaConvertida]"
+                      name="FechaConvertida" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
                       dataType="i4"
@@ -2012,7 +2050,7 @@ FROM            DetalleVentas INNER JOIN
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{2875DE11-539B-47F4-9ACA-84C4704410A1}"
-          SQLTask:SqlStatementSource="EXEC PoblarDimensionTiempo @FechaInicio = '2015-01-01', @FechaFin = '2050-12-31';" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="DECLARE @FechaInicio DATE = '2010-01-01';&#xA;DECLARE @FechaFin DATE = '2030-12-31';&#xA;&#xA;EXEC [BikerZ_DW].[dbo].[PoblarDimensionTiempo] @FechaInicio, @FechaFin;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -2029,7 +2067,7 @@ FROM            DetalleVentas INNER JOIN
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{2875DE11-539B-47F4-9ACA-84C4704410A1}"
-          SQLTask:SqlStatementSource="DELETE FROM Fact_Ventas;&#xA;DELETE FROM Dim_Cliente;&#xA;DELETE FROM Dim_Empleados;&#xA;&#xA;&#xA;DELETE FROM Dim_Almacen;&#xA;DELETE FROM Dim_Territorio;&#xA;DELETE FROM Dim_Pais;&#xA;&#xA;&#xA;&#xA;DELETE FROM Dim_Productos;&#xA;DELETE FROM Dim_Categoria;&#xA;DELETE FROM Dim_Tiempo;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="DELETE FROM Fact_Ventas;&#xA;DELETE FROM Dim_Cliente;&#xA;DELETE FROM Dim_Empleados;&#xA;DELETE FROM Dim_Almacen;&#xA;DELETE FROM Dim_Productos;&#xA;DELETE FROM Dim_Tiempo;&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -2100,10 +2138,6 @@ FROM            DetalleVentas INNER JOIN
           Id="Package\Dim_Almacen"
           TopLeft="704.181818181818,385.909090909091" />
         <NodeLayout
-          Size="145,42"
-          Id="Package\Dim_Producto"
-          TopLeft="320,31" />
-        <NodeLayout
           Size="140,52"
           Id="Package\Dim_Clientes"
           TopLeft="710.272727272727,183.454545454545" />
@@ -2112,47 +2146,21 @@ FROM            DetalleVentas INNER JOIN
           Id="Package\Dim_Empleados"
           TopLeft="585.090909090909,31.727272727273" />
         <NodeLayout
+          Size="145,42"
+          Id="Package\Dim_Producto"
+          TopLeft="320,31" />
+        <NodeLayout
           Size="136,42"
           Id="Package\Fact_Ventas"
           TopLeft="460.818181818182,466.454545454545" />
         <NodeLayout
+          Size="179,42"
+          Id="Package\LLenar Dim Tiempo"
+          TopLeft="126,219" />
+        <NodeLayout
           Size="170,42"
           Id="Package\Tarea Ejecutar SQL"
           TopLeft="152,370" />
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="662.090909090909,73.727272727273">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="118.181818181818,109.727272727272"
-              Start="0,0"
-              End="118.181818181818,102.227272727272">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,50.863636363636" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,50.863636363636"
-                    Point2="0,54.863636363636"
-                    Point3="4,54.863636363636" />
-                  <mssgle:LineSegment
-                    End="114.181818181818,54.863636363636" />
-                  <mssgle:CubicBezierSegment
-                    Point1="114.181818181818,54.863636363636"
-                    Point2="118.181818181818,54.863636363636"
-                    Point3="118.181818181818,58.863636363636" />
-                  <mssgle:LineSegment
-                    End="118.181818181818,102.227272727272" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
           TopLeft="465,52.3636363636365">
@@ -2198,44 +2206,6 @@ FROM            DetalleVentas INNER JOIN
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 5]"
-          TopLeft="775.681818181818,427.909090909091">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-246.863636363636,38.545454545454"
-              Start="0,0"
-              End="-246.863636363636,31.045454545454">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,15.272727272727" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,15.272727272727"
-                    Point2="0,19.272727272727"
-                    Point3="-4,19.272727272727" />
-                  <mssgle:LineSegment
-                    End="-242.863636363636,19.272727272727" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-242.863636363636,19.272727272727"
-                    Point2="-246.863636363636,19.272727272727"
-                    Point3="-246.863636363636,23.272727272727" />
-                  <mssgle:LineSegment
-                    End="-246.863636363636,31.045454545454" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="179,42"
-          Id="Package\LLenar Dim Tiempo"
-          TopLeft="126,219" />
-        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
           TopLeft="237,370">
           <EdgeLayout.Curve>
@@ -2270,6 +2240,40 @@ FROM            DetalleVentas INNER JOIN
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="662.090909090909,73.727272727273">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="118.181818181818,109.727272727272"
+              Start="0,0"
+              End="118.181818181818,102.227272727272">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,50.863636363636" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,50.863636363636"
+                    Point2="0,54.863636363636"
+                    Point3="4,54.863636363636" />
+                  <mssgle:LineSegment
+                    End="114.181818181818,54.863636363636" />
+                  <mssgle:CubicBezierSegment
+                    Point1="114.181818181818,54.863636363636"
+                    Point2="118.181818181818,54.863636363636"
+                    Point3="118.181818181818,58.863636363636" />
+                  <mssgle:LineSegment
+                    End="118.181818181818,102.227272727272" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 4]"
           TopLeft="215.5,219">
           <EdgeLayout.Curve>
@@ -2295,6 +2299,40 @@ FROM            DetalleVentas INNER JOIN
                     Point3="177,-77" />
                   <mssgle:LineSegment
                     End="177,-138.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 5]"
+          TopLeft="775.681818181818,427.909090909091">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-246.863636363636,38.545454545454"
+              Start="0,0"
+              End="-246.863636363636,31.045454545454">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,15.272727272727" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,15.272727272727"
+                    Point2="0,19.272727272727"
+                    Point3="-4,19.272727272727" />
+                  <mssgle:LineSegment
+                    End="-242.863636363636,19.272727272727" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-242.863636363636,19.272727272727"
+                    Point2="-246.863636363636,19.272727272727"
+                    Point3="-246.863636363636,23.272727272727" />
+                  <mssgle:LineSegment
+                    End="-246.863636363636,31.045454545454" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2359,82 +2397,6 @@ FROM            DetalleVentas INNER JOIN
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Dim_Almacen\Origen de OLE DB">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
-    design-time-name="Package\Dim_Producto">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="164,42"
-          Id="Package\Dim_Producto\Origen de OLE DB"
-          TopLeft="318,274" />
-        <NodeLayout
-          Size="168,42"
-          Id="Package\Dim_Producto\Destino de OLE DB"
-          TopLeft="238,441" />
-        <EdgeLayout
-          Id="Package\Dim_Producto.Paths[Salida de origen de OLE DB]"
-          TopLeft="400,316">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-78,125"
-              Start="0,0"
-              End="-78,117.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,58.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,58.5"
-                    Point2="0,62.5"
-                    Point3="-4,62.5" />
-                  <mssgle:LineSegment
-                    End="-74,62.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-74,62.5"
-                    Point2="-78,62.5"
-                    Point3="-78,66.5" />
-                  <mssgle:LineSegment
-                    End="-78,117.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Dim_Producto\Destino de OLE DB">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Dim_Producto\Origen de OLE DB">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -2587,6 +2549,82 @@ FROM            DetalleVentas INNER JOIN
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Dim_Empleados\Origen de OLE DB">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <TaskHost
+    design-time-name="Package\Dim_Producto">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="164,42"
+          Id="Package\Dim_Producto\Origen de OLE DB"
+          TopLeft="318,274" />
+        <NodeLayout
+          Size="168,42"
+          Id="Package\Dim_Producto\Destino de OLE DB"
+          TopLeft="238,441" />
+        <EdgeLayout
+          Id="Package\Dim_Producto.Paths[Salida de origen de OLE DB]"
+          TopLeft="400,316">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-78,125"
+              Start="0,0"
+              End="-78,117.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,58.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,58.5"
+                    Point2="0,62.5"
+                    Point3="-4,62.5" />
+                  <mssgle:LineSegment
+                    End="-74,62.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-74,62.5"
+                    Point2="-78,62.5"
+                    Point3="-78,66.5" />
+                  <mssgle:LineSegment
+                    End="-78,117.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Dim_Producto\Destino de OLE DB">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Dim_Producto\Origen de OLE DB">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
