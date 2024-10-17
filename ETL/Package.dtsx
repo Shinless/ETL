@@ -11,8 +11,8 @@
   DTS:LocaleID="13322"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="15"
-  DTS:VersionGUID="{1C7BD4C1-B6EE-48BD-8CD5-43E63D8DD853}">
+  DTS:VersionBuild="16"
+  DTS:VersionGUID="{BE3A7F5D-C79C-46E2-85A7-D23CDB750D78}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -1645,12 +1645,6 @@ FROM            Productos INNER JOIN
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[EmpleadoID]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VendedorID]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[PrecioUnitario]"
-                      cachedDataType="cy"
-                      cachedName="PrecioUnitario"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Monto]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[PrecioUnitario]" />
-                    <inputColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Fecha]"
                       cachedDataType="dbTimeStamp"
                       cachedName="Fecha"
@@ -1668,6 +1662,12 @@ FROM            Productos INNER JOIN
                       cachedName="FechaConvertida"
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[PrecioUnitario]"
+                      cachedDataType="cy"
+                      cachedName="PrecioUnitario"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[PrecioUnitario]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1696,10 +1696,6 @@ FROM            Productos INNER JOIN
                       dataType="i4"
                       name="Cantidad" />
                     <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Monto]"
-                      dataType="i4"
-                      name="Monto" />
-                    <externalMetadataColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaVenta]"
                       dataType="dbDate"
                       name="FechaVenta" />
@@ -1711,6 +1707,10 @@ FROM            Productos INNER JOIN
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
                       dataType="i4"
                       name="Fecha" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
+                      dataType="cy"
+                      name="PrecioUnitario" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -2348,7 +2348,7 @@ INNER JOIN
     design-time-name="Package\Dim_Almacen">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="164,42"
           Id="Package\Dim_Almacen\Origen de OLE DB"
@@ -2376,7 +2376,9 @@ INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2412,7 +2414,7 @@ INNER JOIN
     design-time-name="Package\Dim_Clientes">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="164,42"
           Id="Package\Dim_Clientes\Origen de OLE DB"
@@ -2452,7 +2454,9 @@ INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2488,7 +2492,7 @@ INNER JOIN
     design-time-name="Package\Dim_Empleados">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="168,42"
           Id="Package\Dim_Empleados\Destino de OLE DB"
@@ -2528,7 +2532,9 @@ INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2566,13 +2572,13 @@ INNER JOIN
       <GraphLayout
         Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="164,42"
-          Id="Package\Dim_Producto\Origen de OLE DB"
-          TopLeft="318,274" />
-        <NodeLayout
           Size="168,42"
           Id="Package\Dim_Producto\Destino de OLE DB"
           TopLeft="238,441" />
+        <NodeLayout
+          Size="164,42"
+          Id="Package\Dim_Producto\Origen de OLE DB"
+          TopLeft="318,274" />
         <EdgeLayout
           Id="Package\Dim_Producto.Paths[Salida de origen de OLE DB]"
           TopLeft="400,316">
