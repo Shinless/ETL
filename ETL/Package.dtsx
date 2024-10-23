@@ -11,8 +11,8 @@
   DTS:LocaleID="13322"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="16"
-  DTS:VersionGUID="{BE3A7F5D-C79C-46E2-85A7-D23CDB750D78}">
+  DTS:VersionBuild="24"
+  DTS:VersionGUID="{2DE45134-32AB-430B-AE3E-AEAEE26D571C}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -95,7 +95,7 @@
                   dataType="System.Int32"
                   description="Especifica el modo utilizado para obtener acceso a la base de datos."
                   name="AccessMode"
-                  typeConverter="AccessMode">3</property>
+                  typeConverter="AccessMode">0</property>
                 <property
                   dataType="System.Boolean"
                   description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida."
@@ -107,7 +107,7 @@
                 <property
                   dataType="System.String"
                   description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                  name="FastLoadOptions"></property>
                 <property
                   dataType="System.Int32"
                   description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida."
@@ -130,19 +130,6 @@
                   name="Entrada de destino de OLE DB">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[AlmacenID]"
-                      cachedDataType="i4"
-                      cachedName="AlmacenID"
-                      externalMetadataColumnId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[AlmacenID]"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]" />
-                    <inputColumn
-                      refId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Almacen]"
-                      cachedDataType="wstr"
-                      cachedLength="50"
-                      cachedName="Almacen"
-                      externalMetadataColumnId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Almacen]"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]" />
-                    <inputColumn
                       refId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[TerritorioID]"
                       cachedDataType="i4"
                       cachedName="TerritorioID"
@@ -155,6 +142,19 @@
                       cachedName="Territorio"
                       externalMetadataColumnId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Territorio]"
                       lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Territorio]" />
+                    <inputColumn
+                      refId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[AlmacenID]"
+                      cachedDataType="i4"
+                      cachedName="AlmacenID"
+                      externalMetadataColumnId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[AlmacenID]"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]" />
+                    <inputColumn
+                      refId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Almacen]"
+                      cachedDataType="wstr"
+                      cachedLength="50"
+                      cachedName="Almacen"
+                      externalMetadataColumnId="Package\Dim_Almacen\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Almacen]"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -220,7 +220,7 @@
                 <property
                   dataType="System.String"
                   description="Especifica el nombre del objeto de base de datos usado para abrir un conjunto de filas."
-                  name="OpenRowset">[dbo].[Almacenes]</property>
+                  name="OpenRowset"></property>
                 <property
                   dataType="System.String"
                   description="Especifica la variable que contiene el nombre del objeto de base de datos usado para abrir un conjunto de filas."
@@ -229,9 +229,18 @@
                   dataType="System.String"
                   description="Comando SQL para ejecutar."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT        Almacenes.AlmacenID, Almacenes.Almacen, Almacenes.TerritorioID, Territorios.Territorio
-FROM            Almacenes INNER JOIN
-                         Territorios ON Almacenes.TerritorioID = Territorios.TerritorioID</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+    Territorios.Territorio, 
+    MIN(Almacenes.AlmacenID) AS AlmacenID, 
+    MIN(Almacenes.Almacen) AS Almacen,
+    Territorios.TerritorioID
+FROM 
+    Territorios 
+INNER JOIN 
+    Almacenes ON Territorios.TerritorioID = Almacenes.TerritorioID
+GROUP BY 
+    Territorios.Territorio, 
+    Territorios.TerritorioID;</property>
                 <property
                   dataType="System.String"
                   description="Variable que contiene el comando SQL para ejecutar."
@@ -268,25 +277,6 @@ FROM            Almacenes INNER JOIN
                   name="Salida de origen de OLE DB">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversión"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
-                      name="AlmacenID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]"
-                      dataType="wstr"
-                      errorOrTruncationOperation="Conversión"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Almacen]"
-                      length="50"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]"
-                      name="Almacen"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
                       refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[TerritorioID]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversión"
@@ -305,18 +295,28 @@ FROM            Almacenes INNER JOIN
                       lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Territorio]"
                       name="Territorio"
                       truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
+                      name="AlmacenID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Almacen]"
+                      length="50"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Almacen]"
+                      name="Almacen"
+                      truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
                     isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
-                      dataType="i4"
-                      name="AlmacenID" />
-                    <externalMetadataColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Almacen]"
-                      dataType="wstr"
-                      length="50"
-                      name="Almacen" />
                     <externalMetadataColumn
                       refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[TerritorioID]"
                       dataType="i4"
@@ -326,6 +326,15 @@ FROM            Almacenes INNER JOIN
                       dataType="wstr"
                       length="50"
                       name="Territorio" />
+                    <externalMetadataColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
+                      dataType="i4"
+                      name="AlmacenID" />
+                    <externalMetadataColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Almacen]"
+                      dataType="wstr"
+                      length="50"
+                      name="Almacen" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -333,17 +342,6 @@ FROM            Almacenes INNER JOIN
                   isErrorOut="true"
                   name="Salida de error de origen de OLE DB">
                   <outputColumns>
-                    <outputColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
-                      dataType="i4"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
-                      name="AlmacenID" />
-                    <outputColumn
-                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Almacen]"
-                      dataType="wstr"
-                      length="50"
-                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Almacen]"
-                      name="Almacen" />
                     <outputColumn
                       refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[TerritorioID]"
                       dataType="i4"
@@ -355,6 +353,17 @@ FROM            Almacenes INNER JOIN
                       length="50"
                       lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Territorio]"
                       name="Territorio" />
+                    <outputColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
+                      dataType="i4"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
+                      name="AlmacenID" />
+                    <outputColumn
+                      refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Almacen]"
+                      dataType="wstr"
+                      length="50"
+                      lineageId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Almacen]"
+                      name="Almacen" />
                     <outputColumn
                       refId="Package\Dim_Almacen\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
                       dataType="i4"
@@ -1574,7 +1583,7 @@ FROM            Productos INNER JOIN
                   dataType="System.Int32"
                   description="Especifica el modo utilizado para obtener acceso a la base de datos."
                   name="AccessMode"
-                  typeConverter="AccessMode">3</property>
+                  typeConverter="AccessMode">0</property>
                 <property
                   dataType="System.Boolean"
                   description="Indica si los valores proporcionados para columnas de identidad se van a copiar al destino. Si es False, los valores de las columnas de identidad se generan automáticamente en el destino. Solo se aplica si está activada la carga rápida."
@@ -1586,7 +1595,7 @@ FROM            Productos INNER JOIN
                 <property
                   dataType="System.String"
                   description="Especifica opciones para usar con la carga rápida. Solo se aplica si está activada la carga rápida."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                  name="FastLoadOptions"></property>
                 <property
                   dataType="System.Int32"
                   description="Especifica cuándo se emiten confirmaciones durante la inserción de datos. El valor 0 especifica que se emitirá una confirmación al final de la inserción de datos. Solo se aplica si está activada la carga rápida."
@@ -1615,23 +1624,17 @@ FROM            Productos INNER JOIN
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[ClienteID]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ClienteID]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[ProductoID]"
-                      cachedDataType="i4"
-                      cachedName="ProductoID"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[ProductoID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]" />
-                    <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[AlmacenID]"
-                      cachedDataType="i4"
-                      cachedName="AlmacenID"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[AlmacenID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]" />
-                    <inputColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Cantidad]"
                       cachedDataType="i2"
                       cachedName="Cantidad"
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Cantidad]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Cantidad]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[PrecioUnitario]"
+                      cachedDataType="cy"
+                      cachedName="PrecioUnitario"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[PrecioUnitario]" />
                     <inputColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[FechaEnvio]"
                       cachedDataType="dbTimeStamp"
@@ -1639,35 +1642,41 @@ FROM            Productos INNER JOIN
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaEnvio]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaEnvio]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[VendedorID]"
-                      cachedDataType="i4"
-                      cachedName="VendedorID"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[EmpleadoID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VendedorID]" />
-                    <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Fecha]"
-                      cachedDataType="dbTimeStamp"
-                      cachedName="Fecha"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaVenta]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha]" />
-                    <inputColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[VentaID]"
                       cachedDataType="i4"
                       cachedName="VentaID"
                       externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[VentaID]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VentaID]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[FechaConvertida]"
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[TerritorioID]"
                       cachedDataType="i4"
-                      cachedName="FechaConvertida"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]" />
+                      cachedName="TerritorioID"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[TerritorioID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[TerritorioID]" />
                     <inputColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[PrecioUnitario]"
-                      cachedDataType="cy"
-                      cachedName="PrecioUnitario"
-                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[PrecioUnitario]" />
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[ProductoID]"
+                      cachedDataType="i4"
+                      cachedName="ProductoID"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[ProductoID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[VendedorID]"
+                      cachedDataType="i4"
+                      cachedName="VendedorID"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[EmpleadoID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VendedorID]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Fecha_convertida]"
+                      cachedDataType="i4"
+                      cachedName="Fecha_convertida"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha_convertida]" />
+                    <inputColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].Columns[Fecha]"
+                      cachedDataType="dbTimeStamp"
+                      cachedName="Fecha"
+                      externalMetadataColumnId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaVenta]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha]" />
                   </inputColumns>
                   <externalMetadataColumns
                     isUsed="True">
@@ -1688,13 +1697,21 @@ FROM            Productos INNER JOIN
                       dataType="i4"
                       name="EmpleadoID" />
                     <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[AlmacenID]"
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[TerritorioID]"
                       dataType="i4"
-                      name="AlmacenID" />
+                      name="TerritorioID" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
+                      dataType="i4"
+                      name="Fecha" />
                     <externalMetadataColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Cantidad]"
                       dataType="i4"
                       name="Cantidad" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
+                      dataType="cy"
+                      name="PrecioUnitario" />
                     <externalMetadataColumn
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaVenta]"
                       dataType="dbDate"
@@ -1703,14 +1720,6 @@ FROM            Productos INNER JOIN
                       refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[FechaEnvio]"
                       dataType="dbDate"
                       name="FechaEnvio" />
-                    <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[Fecha]"
-                      dataType="i4"
-                      name="Fecha" />
-                    <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB].ExternalColumns[PrecioUnitario]"
-                      dataType="cy"
-                      name="PrecioUnitario" />
                   </externalMetadataColumns>
                 </input>
               </inputs>
@@ -1764,25 +1773,10 @@ FROM            Productos INNER JOIN
                   dataType="System.String"
                   description="Comando SQL para ejecutar."
                   name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
-    Ventas.VentaID,
-    Ventas.ClienteID,
-    DetalleVentas.ProductoID,
-    Ventas.VendedorID,
-    Almacenes.AlmacenID,
-    DetalleVentas.Cantidad,
-    DetalleVentas.PrecioUnitario,
-    Ventas.Fecha,
-    Ventas.FechaEnvio,
-    CONVERT(INT, CONVERT(CHAR(8), Ventas.Fecha, 112)) AS FechaConvertida
-FROM
-    DetalleVentas
-INNER JOIN
-    Ventas ON DetalleVentas.VentaID = Ventas.VentaID
-INNER JOIN
-    Territorios ON Ventas.TerritorioID = Territorios.TerritorioID
-INNER JOIN
-    Almacenes ON Territorios.TerritorioID = Almacenes.TerritorioID;</property>
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT        DetalleVentas.Cantidad, DetalleVentas.PrecioUnitario, Ventas.VentaID, Ventas.Fecha, Ventas.FechaEnvio, Ventas.TerritorioID, Ventas.VendedorID, DetalleVentas.ProductoID, Ventas.ClienteID, CONVERT(INT, CONVERT(CHAR(8), 
+                         Ventas.Fecha, 112)) AS Fecha_convertida
+FROM            Ventas INNER JOIN
+                         DetalleVentas ON Ventas.VentaID = DetalleVentas.VentaID</property>
                 <property
                   dataType="System.String"
                   description="Variable que contiene el comando SQL para ejecutar."
@@ -1828,15 +1822,6 @@ INNER JOIN
                       name="ClienteID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversión"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[ProductoID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]"
-                      name="ProductoID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VendedorID]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversión"
@@ -1844,15 +1829,6 @@ INNER JOIN
                       externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[VendedorID]"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[VendedorID]"
                       name="VendedorID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversión"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[AlmacenID]"
-                      name="AlmacenID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Cantidad]"
@@ -1900,13 +1876,31 @@ INNER JOIN
                       name="VentaID"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]"
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha_convertida]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversión"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[FechaConvertida]"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[FechaConvertida]"
-                      name="FechaConvertida"
+                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Fecha_convertida]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[Fecha_convertida]"
+                      name="Fecha_convertida"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[TerritorioID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[TerritorioID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[TerritorioID]"
+                      name="TerritorioID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversión"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[ProductoID]"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].Columns[ProductoID]"
+                      name="ProductoID"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns
@@ -1916,17 +1910,9 @@ INNER JOIN
                       dataType="i4"
                       name="ClienteID" />
                     <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[ProductoID]"
-                      dataType="i4"
-                      name="ProductoID" />
-                    <externalMetadataColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[VendedorID]"
                       dataType="i4"
                       name="VendedorID" />
-                    <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[AlmacenID]"
-                      dataType="i4"
-                      name="AlmacenID" />
                     <externalMetadataColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Cantidad]"
                       dataType="i2"
@@ -1948,9 +1934,17 @@ INNER JOIN
                       dataType="i4"
                       name="VentaID" />
                     <externalMetadataColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[FechaConvertida]"
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[Fecha_convertida]"
                       dataType="i4"
-                      name="FechaConvertida" />
+                      name="Fecha_convertida" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[TerritorioID]"
+                      dataType="i4"
+                      name="TerritorioID" />
+                    <externalMetadataColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de origen de OLE DB].ExternalColumns[ProductoID]"
+                      dataType="i4"
+                      name="ProductoID" />
                   </externalMetadataColumns>
                 </output>
                 <output
@@ -1969,20 +1963,10 @@ INNER JOIN
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ClienteID]"
                       name="ClienteID" />
                     <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ProductoID]"
-                      dataType="i4"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ProductoID]"
-                      name="ProductoID" />
-                    <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[VendedorID]"
                       dataType="i4"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[VendedorID]"
                       name="VendedorID" />
-                    <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
-                      dataType="i4"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[AlmacenID]"
-                      name="AlmacenID" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Cantidad]"
                       dataType="i2"
@@ -1994,20 +1978,30 @@ INNER JOIN
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[PrecioUnitario]"
                       name="PrecioUnitario" />
                     <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[TerritorioID]"
+                      dataType="i4"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[TerritorioID]"
+                      name="TerritorioID" />
+                    <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Fecha]"
                       dataType="dbTimeStamp"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Fecha]"
                       name="Fecha" />
+                    <outputColumn
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ProductoID]"
+                      dataType="i4"
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ProductoID]"
+                      name="ProductoID" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaEnvio]"
                       dataType="dbTimeStamp"
                       lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaEnvio]"
                       name="FechaEnvio" />
                     <outputColumn
-                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaConvertida]"
+                      refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Fecha_convertida]"
                       dataType="i4"
-                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[FechaConvertida]"
-                      name="FechaConvertida" />
+                      lineageId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[Fecha_convertida]"
+                      name="Fecha_convertida" />
                     <outputColumn
                       refId="Package\Fact_Ventas\Origen de OLE DB.Outputs[Salida de error de origen de OLE DB].Columns[ErrorCode]"
                       dataType="i4"
@@ -2348,73 +2342,57 @@ INNER JOIN
     design-time-name="Package\Dim_Almacen">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="164,42"
           Id="Package\Dim_Almacen\Origen de OLE DB"
-          TopLeft="312,323" />
+          TopLeft="334,173" />
         <NodeLayout
           Size="168,42"
           Id="Package\Dim_Almacen\Destino de OLE DB"
-          TopLeft="314,470" />
+          TopLeft="410,295" />
         <EdgeLayout
           Id="Package\Dim_Almacen.Paths[Salida de origen de OLE DB]"
-          TopLeft="396,365">
+          TopLeft="416,215">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,105"
+              EndConnector="78,80"
               Start="0,0"
-              End="0,97.5">
+              End="78,72.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,97.5" />
+                    End="0,36" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,36"
+                    Point2="0,40"
+                    Point3="4,40" />
+                  <mssgle:LineSegment
+                    End="74,40" />
+                  <mssgle:CubicBezierSegment
+                    Point1="74,40"
+                    Point2="78,40"
+                    Point3="78,44" />
+                  <mssgle:LineSegment
+                    End="78,72.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Dim_Almacen\Destino de OLE DB">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Dim_Almacen\Origen de OLE DB">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <TaskHost
     design-time-name="Package\Dim_Clientes">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="164,42"
           Id="Package\Dim_Clientes\Origen de OLE DB"
@@ -2454,9 +2432,7 @@ INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2570,7 +2546,7 @@ INNER JOIN
     design-time-name="Package\Dim_Producto">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="168,42"
           Id="Package\Dim_Producto\Destino de OLE DB"
@@ -2610,7 +2586,9 @@ INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -2650,37 +2628,37 @@ INNER JOIN
         <NodeLayout
           Size="164,42"
           Id="Package\Fact_Ventas\Origen de OLE DB"
-          TopLeft="356,303" />
+          TopLeft="260,97" />
         <NodeLayout
           Size="168,42"
           Id="Package\Fact_Ventas\Destino de OLE DB"
-          TopLeft="224,444" />
+          TopLeft="401,232" />
         <EdgeLayout
           Id="Package\Fact_Ventas.Paths[Salida de origen de OLE DB]"
-          TopLeft="438,345">
+          TopLeft="342,139">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-130,99"
+              EndConnector="143,93"
               Start="0,0"
-              End="-130,91.5">
+              End="143,85.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,45.5" />
+                    End="0,42.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,45.5"
-                    Point2="0,49.5"
-                    Point3="-4,49.5" />
+                    Point1="0,42.5"
+                    Point2="0,46.5"
+                    Point3="4,46.5" />
                   <mssgle:LineSegment
-                    End="-126,49.5" />
+                    End="139,46.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="-126,49.5"
-                    Point2="-130,49.5"
-                    Point3="-130,53.5" />
+                    Point1="139,46.5"
+                    Point2="143,46.5"
+                    Point3="143,50.5" />
                   <mssgle:LineSegment
-                    End="-130,91.5" />
+                    End="143,85.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2692,6 +2670,14 @@ INNER JOIN
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
+  <PipelineComponentMetadata
+    design-time-name="Package\Fact_Ventas\Origen de OLE DB">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Fact_Ventas\Destino de OLE DB">
     <Properties>
@@ -2706,10 +2692,23 @@ INNER JOIN
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Fact_Ventas\Origen de OLE DB">
+    design-time-name="Package\Dim_Almacen\Origen de OLE DB">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Dim_Almacen\Destino de OLE DB">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
       </Property>
     </Properties>
   </PipelineComponentMetadata>
