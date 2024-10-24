@@ -11,8 +11,8 @@
   DTS:LocaleID="13322"
   DTS:ObjectName="incremental"
   DTS:PackageType="5"
-  DTS:VersionBuild="20"
-  DTS:VersionGUID="{2058F043-3A41-4E66-9470-62DBB1A87AC2}">
+  DTS:VersionBuild="29"
+  DTS:VersionGUID="{9C1FCBF9-E422-4DD2-8846-3CF420439F39}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -3715,6 +3715,23 @@ FROM            Categorias INNER JOIN
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
+      DTS:refId="Package\LLenar Tiempo"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Tarea Ejecutar SQL"
+      DTS:DTSID="{C6F57A6F-8E06-489F-90EE-F85982295C79}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="LLenar Tiempo"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022 CTP2.0; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{F17FE754-39B9-47C4-A99E-FA1341A4B515}"
+          SQLTask:SqlStatementSource="DECLARE @FechaInicio DATE = CONVERT(VARCHAR(10), (SELECT MAX(Fecha+1) &#xA;FROM [BikerZ_DW].[dbo].[Dim_Tiempo]), 23)&#xA;&#xA;DECLARE @FechaFin DATE = CONVERT(DATE, GETDATE());&#xA;&#xA;EXEC [BikerZ_DW].[dbo].[PoblarDimensionTiempo] @FechaInicio, @FechaFin;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
       DTS:refId="Package\Productos"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Tarea Flujo de datos"
@@ -5439,12 +5456,12 @@ FROM            Categorias INNER JOIN
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Ventas\División condicional.Outputs[Case 1]"
+                  refId="Package\Ventas\División condicional.Outputs[Registro]"
                   description="Salida 1 de la transformación División condicional"
                   errorOrTruncationOperation="Cálculo"
                   errorRowDisposition="FailComponent"
                   exclusionGroup="1"
-                  name="Case 1"
+                  name="Registro"
                   synchronousInputId="Package\Ventas\División condicional.Inputs[Entrada de división condicional]"
                   truncationRowDisposition="FailComponent">
                   <properties>
@@ -6707,7 +6724,7 @@ FROM            Ventas INNER JOIN
               refId="Package\Ventas.Paths[Case 1]"
               endId="Package\Ventas\Destino de OLE DB.Inputs[Entrada de destino de OLE DB]"
               name="Case 1"
-              startId="Package\Ventas\División condicional.Outputs[Case 1]" />
+              startId="Package\Ventas\División condicional.Outputs[Registro]" />
             <path
               refId="Package\Ventas.Paths[Salida de combinación de mezcla]"
               endId="Package\Ventas\División condicional.Inputs[Entrada de división condicional]"
@@ -6715,14 +6732,14 @@ FROM            Ventas INNER JOIN
               startId="Package\Ventas\Combinación de mezcla.Outputs[Salida de combinación de mezcla]" />
             <path
               refId="Package\Ventas.Paths[Salida de ordenación]"
-              endId="Package\Ventas\Combinación de mezcla.Inputs[Entrada izquierda de combinación de mezcla]"
-              name="Salida de ordenación"
-              startId="Package\Ventas\Ordenar 1.Outputs[Salida de ordenación]" />
-            <path
-              refId="Package\Ventas.Paths[Salida de ordenación1]"
               endId="Package\Ventas\Combinación de mezcla.Inputs[Entrada derecha de combinación de mezcla]"
               name="Salida de ordenación"
               startId="Package\Ventas\Ordenar.Outputs[Salida de ordenación]" />
+            <path
+              refId="Package\Ventas.Paths[Salida de ordenación1]"
+              endId="Package\Ventas\Combinación de mezcla.Inputs[Entrada izquierda de combinación de mezcla]"
+              name="Salida de ordenación"
+              startId="Package\Ventas\Ordenar 1.Outputs[Salida de ordenación]" />
             <path
               refId="Package\Ventas.Paths[Salida de origen de OLE DB]"
               endId="Package\Ventas\Ordenar 1.Inputs[Entrada de ordenación]"
@@ -6771,6 +6788,14 @@ FROM            Ventas INNER JOIN
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 3"
       DTS:To="Package\Ventas" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 4]"
+      DTS:CreationName=""
+      DTS:DTSID="{3AA27A9B-1C68-472F-9D7C-86E6C30004D1}"
+      DTS:From="Package\LLenar Tiempo"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 4"
+      DTS:To="Package\Productos" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
@@ -6785,28 +6810,28 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
-          Size="119,42"
+          Size="119.2,41.6"
           Id="Package\Almacen"
-          TopLeft="188,178" />
+          TopLeft="188,206.888889294045" />
         <NodeLayout
-          Size="110,42"
+          Size="110.4,41.6"
           Id="Package\cliente"
-          TopLeft="380,176" />
+          TopLeft="380,204.888889294045" />
         <NodeLayout
-          Size="125,42"
+          Size="124.8,41.6"
           Id="Package\Empleado"
-          TopLeft="377,76" />
+          TopLeft="377,104.888889294045" />
         <NodeLayout
-          Size="125,42"
+          Size="124.8,41.6"
           Id="Package\Productos"
-          TopLeft="188,73" />
+          TopLeft="188,101.888889294045" />
         <NodeLayout
-          Size="111,42"
+          Size="111.2,41.6"
           Id="Package\Ventas"
-          TopLeft="188,280" />
+          TopLeft="188,308.888889294045" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="313,95.5">
+          TopLeft="313,124.388889294045">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -6828,7 +6853,7 @@ FROM            Ventas INNER JOIN
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="437.25,118">
+          TopLeft="437.25,146.888889294045">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -6850,7 +6875,7 @@ FROM            Ventas INNER JOIN
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="380,198">
+          TopLeft="380,226.888889294045">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -6872,7 +6897,7 @@ FROM            Ventas INNER JOIN
         </EdgeLayout>
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="245.5,220">
+          TopLeft="245.5,248.888889294045">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -6892,6 +6917,32 @@ FROM            Ventas INNER JOIN
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="148,41.6"
+          Id="Package\LLenar Tiempo"
+          TopLeft="177.325399751566,12.552287680605" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="250.862699875783,54.152287680605">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,47.7366016134396"
+              Start="0,0"
+              End="0,40.2366016134396">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,40.2366016134396" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </Package>
@@ -6901,27 +6952,31 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="171,42"
+          Size="171.2,41.6"
           Id="Package\Almacen\División condicional"
           TopLeft="431,199" />
         <NodeLayout
-          Size="117,42"
+          Size="116.8,41.6"
           Id="Package\Almacen\Ordenar"
           TopLeft="257,11" />
         <NodeLayout
-          Size="164,42"
+          Size="164,41.6"
           Id="Package\Almacen\Origen de OLE DB"
           TopLeft="35,14" />
         <NodeLayout
-          Size="126,42"
+          Size="168,41.6"
+          Id="Package\Almacen\Destino de OLE DB"
+          TopLeft="406,322" />
+        <NodeLayout
+          Size="126.4,41.6"
           Id="Package\Almacen\Ordenar 1"
           TopLeft="262,160" />
         <NodeLayout
-          Size="173,42"
+          Size="172.8,41.6"
           Id="Package\Almacen\Origen de OLE DB 1"
           TopLeft="49,163" />
         <NodeLayout
-          Size="190,42"
+          Size="190.4,41.6"
           Id="Package\Almacen\Combinación de mezcla"
           TopLeft="412,87" />
         <EdgeLayout
@@ -7027,6 +7082,42 @@ FROM            Ventas INNER JOIN
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
+          Id="Package\Almacen.Paths[Registro]"
+          TopLeft="516.5,241">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-26.5,81"
+              Start="0,0"
+              End="-26.5,73.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,36.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,36.5"
+                    Point2="0,40.5"
+                    Point3="-4,40.5" />
+                  <mssgle:LineSegment
+                    End="-22.5,40.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-22.5,40.5"
+                    Point2="-26.5,40.5"
+                    Point3="-26.5,44.5" />
+                  <mssgle:LineSegment
+                    End="-26.5,73.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-31.80203125,45.5,37.1040625,11.384765625"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
           Id="Package\Almacen.Paths[Salida de origen de OLE DB1]"
           TopLeft="222,182.5">
           <EdgeLayout.Curve>
@@ -7070,51 +7161,24 @@ FROM            Ventas INNER JOIN
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="168,42"
-          Id="Package\Almacen\Destino de OLE DB"
-          TopLeft="406,322" />
-        <EdgeLayout
-          Id="Package\Almacen.Paths[Registro]"
-          TopLeft="516.5,241">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-26.5,81"
-              Start="0,0"
-              End="-26.5,73.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,36.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,36.5"
-                    Point2="0,40.5"
-                    Point3="-4,40.5" />
-                  <mssgle:LineSegment
-                    End="-22.5,40.5" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-22.5,40.5"
-                    Point2="-26.5,40.5"
-                    Point3="-26.5,44.5" />
-                  <mssgle:LineSegment
-                    End="-26.5,73.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-31.80203125,45.5,37.1040625,11.384765625"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
     design-time-name="Package\Almacen\Origen de OLE DB">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Almacen\Destino de OLE DB">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -7145,31 +7209,31 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="173,42"
+          Size="172.8,41.6"
           Id="Package\cliente\Origen de OLE DB 1"
           TopLeft="22,163" />
         <NodeLayout
-          Size="164,42"
+          Size="164,41.6"
           Id="Package\cliente\Origen de OLE DB"
           TopLeft="35,14" />
         <NodeLayout
-          Size="171,42"
+          Size="171.2,41.6"
           Id="Package\cliente\División condicional"
           TopLeft="431,199" />
         <NodeLayout
-          Size="126,42"
+          Size="126.4,41.6"
           Id="Package\cliente\Ordenar 1"
           TopLeft="260,159" />
         <NodeLayout
-          Size="117,42"
+          Size="116.8,41.6"
           Id="Package\cliente\Ordenar"
           TopLeft="256,13" />
         <NodeLayout
-          Size="168,42"
+          Size="168,41.6"
           Id="Package\cliente\Destino de OLE DB"
           TopLeft="429,290" />
         <NodeLayout
-          Size="190,42"
+          Size="190.4,41.6"
           Id="Package\cliente\Combinación de mezcla"
           TopLeft="398,90" />
         <EdgeLayout
@@ -7191,9 +7255,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7215,9 +7277,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7251,9 +7311,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7287,9 +7345,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7311,9 +7367,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7388,31 +7442,31 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="164,42"
+          Size="164,41.6"
           Id="Package\Empleado\Origen de OLE DB"
           TopLeft="35,14" />
         <NodeLayout
-          Size="117,42"
+          Size="116.8,41.6"
           Id="Package\Empleado\Ordenar"
           TopLeft="259,15" />
         <NodeLayout
-          Size="126,42"
+          Size="126.4,41.6"
           Id="Package\Empleado\Ordenar 1"
           TopLeft="263,163" />
         <NodeLayout
-          Size="173,42"
+          Size="172.8,41.6"
           Id="Package\Empleado\Origen de OLE DB 1"
           TopLeft="49,163" />
         <NodeLayout
-          Size="168,42"
+          Size="168,41.6"
           Id="Package\Empleado\Destino de OLE DB"
           TopLeft="429,290" />
         <NodeLayout
-          Size="190,42"
+          Size="190.4,41.6"
           Id="Package\Empleado\Combinación de mezcla"
           TopLeft="403,82" />
         <NodeLayout
-          Size="171,42"
+          Size="171.2,41.6"
           Id="Package\Empleado\División condicional"
           TopLeft="431,199" />
         <EdgeLayout
@@ -7434,9 +7488,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7470,9 +7522,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7506,9 +7556,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7542,9 +7590,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
@@ -7590,9 +7636,7 @@ FROM            Ventas INNER JOIN
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
+            <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -7643,31 +7687,31 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="117,42"
+          Size="116.8,41.6"
           Id="Package\Productos\Ordenar"
           TopLeft="251,14" />
         <NodeLayout
-          Size="126,42"
+          Size="126.4,41.6"
           Id="Package\Productos\Ordenar 1"
           TopLeft="258,164" />
         <NodeLayout
-          Size="168,42"
+          Size="168,41.6"
           Id="Package\Productos\Destino de OLE DB"
           TopLeft="429,290" />
         <NodeLayout
-          Size="164,42"
+          Size="164,41.6"
           Id="Package\Productos\Origen de OLE DB"
           TopLeft="35,14" />
         <NodeLayout
-          Size="173,42"
+          Size="172.8,41.6"
           Id="Package\Productos\Origen de OLE DB 1"
           TopLeft="49,163" />
         <NodeLayout
-          Size="171,42"
+          Size="171.2,41.6"
           Id="Package\Productos\División condicional"
           TopLeft="420.909090909091,196.363636363636" />
         <NodeLayout
-          Size="190,42"
+          Size="190.4,41.6"
           Id="Package\Productos\Combinación de mezcla"
           TopLeft="408.181818181818,93.6363636363636" />
         <EdgeLayout
@@ -7888,87 +7932,33 @@ FROM            Ventas INNER JOIN
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
-          Size="173,42"
-          Id="Package\Ventas\Origen de OLE DB 1"
-          TopLeft="37,159" />
-        <NodeLayout
-          Size="126,42"
-          Id="Package\Ventas\Ordenar 1"
-          TopLeft="240,157" />
-        <EdgeLayout
-          Id="Package\Ventas.Paths[Salida de origen de OLE DB]"
-          TopLeft="210,179">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="30,0"
-              Start="0,0"
-              End="22.5,0">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="22.5,0" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="171,42"
-          Id="Package\Ventas\División condicional"
-          TopLeft="459,196" />
-        <NodeLayout
-          Size="168,42"
-          Id="Package\Ventas\Destino de OLE DB"
-          TopLeft="447,324" />
-        <EdgeLayout
-          Id="Package\Ventas.Paths[Case 1]"
-          TopLeft="544.5,238">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-13.5,86"
-              Start="0,0"
-              End="-13.5,78.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,39" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,39"
-                    Point2="0,43"
-                    Point3="-4,43" />
-                  <mssgle:LineSegment
-                    End="-9.5,43" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-9.5,43"
-                    Point2="-13.5,43"
-                    Point3="-13.5,47" />
-                  <mssgle:LineSegment
-                    End="-13.5,78.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="-21.9680859375,48,30.436171875,9.5537109375"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="164,42"
+          Size="164,41.6"
           Id="Package\Ventas\Origen de OLE DB"
           TopLeft="39,35" />
         <NodeLayout
-          Size="117,42"
+          Size="172.8,41.6"
+          Id="Package\Ventas\Origen de OLE DB 1"
+          TopLeft="37,159" />
+        <NodeLayout
+          Size="171.2,41.6"
+          Id="Package\Ventas\División condicional"
+          TopLeft="459,196" />
+        <NodeLayout
+          Size="126.4,41.6"
+          Id="Package\Ventas\Ordenar 1"
+          TopLeft="240,157" />
+        <NodeLayout
+          Size="168,41.6"
+          Id="Package\Ventas\Destino de OLE DB"
+          TopLeft="447,324" />
+        <NodeLayout
+          Size="116.8,41.6"
           Id="Package\Ventas\Ordenar"
           TopLeft="248,32" />
+        <NodeLayout
+          Size="190.4,41.6"
+          Id="Package\Ventas\Combinación de mezcla"
+          TopLeft="430,100" />
         <EdgeLayout
           Id="Package\Ventas.Paths[Salida de origen de OLE DB1]"
           TopLeft="203,54.5">
@@ -7991,36 +7981,20 @@ FROM            Ventas INNER JOIN
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="190,42"
-          Id="Package\Ventas\Combinación de mezcla"
-          TopLeft="430,100" />
         <EdgeLayout
-          Id="Package\Ventas.Paths[Salida de ordenación]"
-          TopLeft="366,178">
+          Id="Package\Ventas.Paths[Salida de origen de OLE DB]"
+          TopLeft="210,179">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="64,-57"
+              EndConnector="30,0"
               Start="0,0"
-              End="56.5,-57">
+              End="22.5,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="28,0" />
-                  <mssgle:CubicBezierSegment
-                    Point1="28,0"
-                    Point2="32,0"
-                    Point3="32,-4" />
-                  <mssgle:LineSegment
-                    End="32,-53" />
-                  <mssgle:CubicBezierSegment
-                    Point1="32,-53"
-                    Point2="32,-57"
-                    Point3="36,-57" />
-                  <mssgle:LineSegment
-                    End="56.5,-57" />
+                    End="22.5,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -8030,7 +8004,7 @@ FROM            Ventas INNER JOIN
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Ventas.Paths[Salida de ordenación1]"
+          Id="Package\Ventas.Paths[Salida de ordenación]"
           TopLeft="306.5,74">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -8097,30 +8071,79 @@ FROM            Ventas INNER JOIN
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Ventas.Paths[Salida de ordenación1]"
+          TopLeft="366.4,177.8">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="63.6000000000001,-57"
+              Start="0,0"
+              End="56.1000000000001,-57">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="27.8,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="27.8,0"
+                    Point2="31.8,0"
+                    Point3="31.8,-4" />
+                  <mssgle:LineSegment
+                    End="31.8,-53" />
+                  <mssgle:CubicBezierSegment
+                    Point1="31.8,-53"
+                    Point2="31.8,-57"
+                    Point3="35.8,-57" />
+                  <mssgle:LineSegment
+                    End="56.1000000000001,-57" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package\Ventas.Paths[Case 1]"
+          TopLeft="544.6,237.6">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-13.6,86.4"
+              Start="0,0"
+              End="-13.6,78.9">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,39.2" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,39.2"
+                    Point2="0,43.2"
+                    Point3="-4,43.2" />
+                  <mssgle:LineSegment
+                    End="-9.60000000000002,43.2" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-9.60000000000002,43.2"
+                    Point2="-13.6,43.2"
+                    Point3="-13.6,47.2" />
+                  <mssgle:LineSegment
+                    End="-13.6,78.9" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-25.35203125,48.2,37.1040625,11.384765625"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
       </GraphLayout>
     </LayoutInfo>
   </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Ventas\Origen de OLE DB 1">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Ventas\Destino de OLE DB">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Ventas\Origen de OLE DB">
     <Properties>
@@ -8135,7 +8158,15 @@ FROM            Ventas INNER JOIN
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\Almacen\Destino de OLE DB">
+    design-time-name="Package\Ventas\Origen de OLE DB 1">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\Ventas\Destino de OLE DB">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
